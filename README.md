@@ -1,6 +1,11 @@
 # angular-burt-analytics
 This is a simple angular module which lets you integrate burt analytics tracker in your AngularJS application.
 
+##How to install using bower
+```bash
+bower install angular-burt-analytics
+```
+
 ##How to use angular-burt-analytics in your angular app
 In Html:
 ```html
