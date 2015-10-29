@@ -121,13 +121,16 @@
                 startUnitTracking = status;
                 return this;
             };
+
+
             /**
              *
              * @type {*[]}
              */
-            this.$get = ['$document', '$location', '$log', '$rootScope', '$window', function ($document, $location, $log, $window) {
+            this.$get = ['$document', '$location', '$log', '$rootScope', '$window', '$q', function ($document, $location, $log, $window, $q) {
                 var that = this,
                     eventsName = ['_trackPage'];
+                var $deferredApi = $q.defer();
                 that.log = function () {
                     $log.info.apply(null, arguments);
                 }
@@ -140,6 +143,13 @@
                         }
                     }
                 }
+                /**
+                 *
+                 * @returns {*}
+                 */
+                this._getApi = function () {
+                    return $deferredApi.promise;
+                };
                 /**
                  *
                  * @returns {*}
@@ -198,6 +208,7 @@
                                 }
                                 __api = api;
                                 that.offlineQueue.length && that.clearOffLineQ();
+                                $deferredApi.resolve(__api);
                             }
                             else {
                                 Errors._missingTrackingKey();
@@ -237,6 +248,9 @@
                     },
                     createScriptTag: function () {
                         return that._createScriptTag();
+                    },
+                    getApi: function () {
+                        return that._getApi();
                     },
                     trackPage: function (scope, name, value) {
                         that._trackPage.apply(that, arguments);
