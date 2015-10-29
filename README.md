@@ -16,7 +16,7 @@ In you angular app config
 //In start of app, Module(ngBurtAnalytics) injection 
 angular.module('kokaihop', [
      //... other modules
-     'ngBurtAnalytics',
+     'ngBurtAnalytics', //here module injection
     'ngHelpers'
 ])
 //Provider injection to setup your BurtAnalytics
