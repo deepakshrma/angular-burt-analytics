@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Angular Burt Analytics by deepakshrma</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Angular Burt Analytics</h1>
+      <h2 class="project-tagline">This is a simple angular module which lets you integrate burt analytic tracker in your AngularJS application.</h2>
+      <a href="https://github.com/deepakshrma/angular-burt-analytics" class="btn">View on GitHub</a>
+      <a href="https://github.com/deepakshrma/angular-burt-analytics/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/deepakshrma/angular-burt-analytics/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="angular-burt-analytics" class="anchor" href="#angular-burt-analytics" aria-hidden="true"><span class="octicon octicon-link"></span></a>angular-burt-analytics</h1>
+
+<p>This is a simple angular module which lets you integrate burt analytics tracker in your AngularJS application.</p>
+
+<h2>
+<a id="how-to-install-using-bower" class="anchor" href="#how-to-install-using-bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to install using bower</h2>
+
+<div class="highlight highlight-source-shell"><pre>bower install angular-burt-analytics</pre></div>
+
+<h2>
+<a id="how-to-use-angular-burt-analytics-in-your-angular-app" class="anchor" href="#how-to-use-angular-burt-analytics-in-your-angular-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use angular-burt-analytics in your angular app</h2>
+
+<p>In Html:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>client/bower_components/angular-burt-analytics/js/angular-burt-analytics.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<p>In you angular app config</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">//In start of app, Module(ngBurtAnalytics) injection </span>
+angular.module(<span class="pl-s"><span class="pl-pds">'</span>kokaihop<span class="pl-pds">'</span></span>, [
+     <span class="pl-c">//... other modules</span>
+     <span class="pl-s"><span class="pl-pds">'</span>ngBurtAnalytics<span class="pl-pds">'</span></span>,
+    <span class="pl-s"><span class="pl-pds">'</span>ngHelpers<span class="pl-pds">'</span></span>
+])
+<span class="pl-c">//Provider injection to setup your BurtAnalytics</span>
+.config(<span class="pl-k">function</span> ( <span class="pl-smi">BurtAnalyticsProvider</span>) {
+<span class="pl-c">//setUp will goes here</span>
+BurtAnalyticsProvider.setTrackingKey([<span class="pl-s"><span class="pl-pds">'</span>xxxx<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>xxx.se<span class="pl-pds">'</span></span>]);<span class="pl-c">//TODO: set Burt Analytics key, name values ['xxxx', 'xxx.se']</span>
+BurtAnalyticsProvider.setBurtUrl(<span class="pl-s"><span class="pl-pds">'</span>http://m.burt.io/k/xxxx-se.js<span class="pl-pds">'</span></span>);<span class="pl-c">//TODO: set Burt Analytics url value 'http://m.burt.io/k/xxxx-se.js'</span>
+BurtAnalyticsProvider.setDomainName(<span class="pl-s"><span class="pl-pds">'</span>xxx.se<span class="pl-pds">'</span></span>);<span class="pl-c">//TODO: set Burt Analytics domain name value 'xxxx.se'</span>
+BurtAnalyticsProvider.setCloudKey(<span class="pl-s"><span class="pl-pds">'</span>xxxx<span class="pl-pds">'</span></span>);<span class="pl-c">//TODO: set Burt Analytics setCloudKey value 'xxxx'</span>
+});
+<span class="pl-c">//Track you event via BurtAnalytics service</span>
+<span class="pl-c">//In route change</span>
+.run(<span class="pl-k">function</span> (<span class="pl-smi">$rootScope</span>, <span class="pl-smi">$location</span>, <span class="pl-smi">BurtAnalytics</span>) {
+$rootScope.$on(<span class="pl-s"><span class="pl-pds">'</span>$stateChangeSuccess<span class="pl-pds">'</span></span>,
+<span class="pl-k">function</span> (<span class="pl-smi">event</span>, <span class="pl-smi">toState</span>, <span class="pl-smi">toParams</span>, <span class="pl-smi">fromState</span>, <span class="pl-smi">fromParams</span>) {
+BurtAnalytics.trackPage(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>scope<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>value<span class="pl-pds">'</span></span>); <span class="pl-c">//simple one</span>
+burtAnalytic(toState.<span class="pl-c1">name</span>, toParams, $location.$$url);<span class="pl-c">// more complex one</span>
+})
+<span class="pl-k">function</span> <span class="pl-en">burtAnalytic</span>(<span class="pl-smi">state</span>, <span class="pl-smi">stateParams</span>, <span class="pl-smi">url</span>) {
+    <span class="pl-k">var</span> params <span class="pl-k">=</span> [];
+    params[<span class="pl-c1">0</span>] <span class="pl-k">=</span> state;
+    <span class="pl-k">switch</span> (state) {
+        <span class="pl-k">case</span> <span class="pl-s"><span class="pl-pds">"</span>main.recipe.show<span class="pl-pds">"</span></span><span class="pl-k">:</span>
+            params[<span class="pl-c1">1</span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>recipe<span class="pl-pds">'</span></span>;
+            params[<span class="pl-c1">2</span>] <span class="pl-k">=</span> stateParams.friendlyUrl;
+            <span class="pl-k">break</span>;
+        <span class="pl-k">default</span> <span class="pl-k">:</span>
+            params[<span class="pl-c1">1</span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Home<span class="pl-pds">'</span></span>
+            params[<span class="pl-c1">2</span>] <span class="pl-k">=</span> url;
+            <span class="pl-k">break</span>
+    }
+    BurtAnalytics.trackPage.<span class="pl-c1">apply</span>(<span class="pl-c1">null</span>, params)
+}
+})
+<span class="pl-c">//In your controller</span>
+.controller(<span class="pl-k">function</span> (<span class="pl-smi">BurtAnalytics</span>) {
+BurtAnalytics.trackPage(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>scope<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>value<span class="pl-pds">'</span></span>); <span class="pl-c">//simple one</span>
+<span class="pl-c">// we provide offline support to trackPage api. Means if it take too long time to add script.</span>
+<span class="pl-c">//We store data on queue whenever api will up. We will send data to burt server.  </span>
+<span class="pl-k">var</span> apiPromise <span class="pl-k">=</span> BurtAnalytics.getApi();
+    apiPromise.then(<span class="pl-k">function</span>(<span class="pl-smi">api</span>) {
+        <span class="pl-c">//do something here</span>
+        <span class="pl-c">//raw burt api</span>
+        api.annotate(<span class="pl-s"><span class="pl-pds">'</span>burt.author<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>author<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Joe<span class="pl-pds">'</span></span>);
+        <span class="pl-c">//More: http://docs.burt.io/client/tracking/</span>
+    }, <span class="pl-k">function</span>(<span class="pl-smi">reason</span>) {
+      <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>Failed: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> reason);
+    });
+})</pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/deepakshrma/angular-burt-analytics">Angular Burt Analytics</a> is maintained by <a href="https://github.com/deepakshrma">deepakshrma</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
