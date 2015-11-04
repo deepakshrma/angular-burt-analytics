@@ -127,7 +127,7 @@
              *
              * @type {*[]}
              */
-            this.$get = ['$document', '$location', '$log', '$rootScope', '$window', '$q', function ($document, $location, $log, $window, $q) {
+            this.$get = ['$document', '$location', '$log', '$window', '$q', function ($document, $location, $log, $window, $q) {
                 var that = this,
                     eventsName = ['_trackPage'];
                 var $deferredApi = $q.defer();
