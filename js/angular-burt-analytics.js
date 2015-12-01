@@ -1,6 +1,6 @@
 /**
  * @author: Deepak Vishwakarma
- * @version: 0.0.3
+ * @version: 0.0.4
  * @copyright: deepak.m.shrma@gmail.com
  */
 
@@ -131,9 +131,9 @@
                 var that = this,
                     eventsName = ['_trackPage'];
                 var $deferredApi = $q.defer();
-                that.log = function () {
+                that._log = function () {
                     $log.info.apply(null, arguments);
-                }
+                };
                 that.offlineQueue = []; //[{name, values}]
                 that.clearOffLineQ = function () {
                     if (that.offlineQueue.length > 0) {
@@ -147,7 +147,7 @@
                  *
                  * @returns {*}
                  */
-                this._getApi = function () {
+                that._getApi = function () {
                     return $deferredApi.promise;
                 };
                 /**
@@ -155,7 +155,7 @@
                  * @returns {*}
                  * @private
                  */
-                this._createScriptTag = function () {
+                that._createScriptTag = function () {
                     if (created === true) {
                         that._log('warn', 'burt.js script tag already created');
                         return;
@@ -168,7 +168,6 @@
                         return Errors._missingDomainName()
                     }
                     // If not in test mode inject the Google Analytics tag
-                    var initApiInterval;
                     (function () {
                         var document = $document[0];
                         var ba = document.createElement('script');
@@ -178,44 +177,7 @@
                         var s = document.getElementsByTagName('script')[0];
                         s.parentNode.insertBefore(ba, s);
                     })();
-                    $document.ready(function () {
-                        initApiInterval = setInterval(function () {
-                            if ($window.burtApi) {
-                                _initApi();
-                                clearInterval(initApiInterval);
-                                that.log('info', "Burt script is ready to use");
-                            }
-                        }, 200)
-                    })
-                    function _initApi() {
-                        $window.burtApi.startTracking(function (api) {
-                            if (account && domainName) {
-                                api.setTrackingKey(account.key, account.name);
-                                if (domainName && api.setDomain) {
-                                    api.setDomain(domainName);
-                                }
-                                else {
-                                    that.log('warn', "missing domain name or api.setDomain")
-                                }
-                                if (cloudKey && api.addCloudKey) {
-                                    api.addCloudKey(cloudKey);
-                                }
-                                else {
-                                    that.log('warn', "missing cloudKey or api.addCloudKey")
-                                }
-                                if (startUnitTracking) {
-                                    api.startUnitTracking();
-                                }
-                                __api = api;
-                                that.offlineQueue.length && that.clearOffLineQ();
-                                $deferredApi.resolve(__api);
-                            }
-                            else {
-                                Errors._missingTrackingKey();
-                            }
-                        });
-                    }
-
+                    startObservation();
                     created = true;
                     return true;
                 };
@@ -227,7 +189,7 @@
                  * @param undefined
                  * @private
                  */
-                this._trackPage = function (scope, name, values, undefined) {
+                that._trackPage = function (scope, name, values, undefined) {
                     if (__api) {
                         __api.annotate(scope, name, values);
                     }
@@ -237,10 +199,85 @@
                 };
                 // creates the Google Analytics tracker
                 if (!delayScriptTag) {
-                    this._createScriptTag();
+                    that._createScriptTag();
                 }
+                var initApiInterval;
+
+                /**
+                 * startObservation method
+                 */
+                function startObservation() {
+                    if (!initApiInterval) {
+                        initApiInterval = setInterval(function () {
+                            $document.ready(function () {
+                                if ($window.burtApi) {
+                                    _initApi();
+                                    clearInterval(initApiInterval);
+                                    initApiInterval = null;
+                                    that._log('info', "Burt script is ready to use");
+                                }
+                            });
+                        }, 200)
+                    }
+                }
+
+                /**
+                 * stopObservation method
+                 */
+                function stopObservation() {
+                    if (__api) {
+                        $window.burtApi.stopTracking();
+                        __api = null;
+                    }
+                }
+
+                /**
+                 *
+                 * @private
+                 */
+                function _initApi() {
+                    stopObservation();
+                    $window.burtApi.startTracking(function (api) {
+                        if (account && domainName) {
+                            api.setTrackingKey(account.key, account.name);
+                            if (domainName && api.setDomain) {
+                                api.setDomain(domainName);
+                            }
+                            else {
+                                that._log('warn', "missing domain name or api.setDomain")
+                            }
+                            if (cloudKey && api.addCloudKey) {
+                                api.addCloudKey(cloudKey);
+                            }
+                            else {
+                                that._log('warn', "missing cloudKey or api.addCloudKey")
+                            }
+                            if (startUnitTracking) {
+                                api.startUnitTracking();
+                            }
+                            __api = api;
+                            that.offlineQueue.length && that.clearOffLineQ();
+                            $deferredApi.resolve(__api);
+                        }
+                        else {
+                            Errors._missingTrackingKey();
+                        }
+                    });
+                }
+
+                /**
+                 * return object with methods and configuration properties
+                 * #log
+                 * #__api
+                 * #configuration
+                 * #createScriptTag
+                 * #startBurtTracking
+                 * #stopBurtTracking
+                 * #getApi
+                 * #trackPage
+                 */
                 return {
-                    log: that.log,
+                    log: that._log,
                     __api: __api, //TODO: remove it
                     configuration: {
                         account: account,
@@ -248,6 +285,12 @@
                     },
                     createScriptTag: function () {
                         return that._createScriptTag();
+                    },
+                    startBurtTracking: function () {
+                        return startObservation();
+                    },
+                    stopBurtTracking: function () {
+                        return stopObservation();
                     },
                     getApi: function () {
                         return that._getApi();
