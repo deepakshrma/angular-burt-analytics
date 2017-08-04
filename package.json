@@ -1,0 +1,34 @@
+{
+  "name": "angular-burt-analytics",
+  "version": "1.0.0",
+  "description": "This is a simple angular module which lets you integrate burt analytics tracker in your AngularJS application.",
+  "main": "js/angular-burt-analytics.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepakshrma/angular-burt-analytics.git"
+  },
+  "keywords": [
+    "burt",
+    "angular",
+    "analytics"
+  ],
+  "author": "deepakshrma <deepak.m.shrma@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deepakshrma/angular-burt-analytics/issues"
+  },
+  "homepage": "https://github.com/deepakshrma/angular-burt-analytics#readme",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "eslint": "^4.3.0"
+  }
+}
